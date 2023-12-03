@@ -397,7 +397,10 @@ export const View = ({ data }) => {
                                     <AvatarImage src={row.original.user.photoURL} />
                                     <AvatarFallback>CN</AvatarFallback>
                                   </Avatar>
-                                  {row.original.user.email}
+                                  <div className="flex flex-col">
+                                    <span className="text-xs text-slate-500">{row.original.user.email}</span>
+                                    <span className="text-xs text-slate-500">{row.original.helperPhoneNumber}</span>
+                                  </div>
                                 </TableCell>
                                 <TableCell>
                                   <DropdownMenu>

@@ -194,7 +194,10 @@ export const View = ({ data }) => {
                                   <AvatarImage src={item.user.photoURL} />
                                   <AvatarFallback>CN</AvatarFallback>
                                 </Avatar>
-                                <span className="text-xs">{item.user.email}</span>
+                                <div className="flex flex-col">
+                                  <span className="text-xs text-slate-500">{item.user.email}</span>
+                                  <span className="text-xs text-slate-500">{item.helperPhoneNumber}</span>
+                                </div>
                               </div>
                             </div>
                           </div>
