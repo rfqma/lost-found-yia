@@ -25,6 +25,7 @@ import {
 import { ToastAction } from "@/components/ui/toast"
 import { DateTime } from "luxon"
 import { SelectSingleEventHandler } from "react-day-picker"
+import { RouteProtection } from "@/lib/utilities/route-protection"
 
 export const View = () => {
   const [namaBarang, setNamaBarang] = useState('')
@@ -169,172 +170,174 @@ export const View = () => {
   }
 
   return (
-    <div className="container p-5 py-24">
-      <div className="flex flex-col items-center gap-10">
+    <RouteProtection>
+      <div className="container p-5 py-24">
+        <div className="flex flex-col items-center gap-10">
 
-        <div className="flex flex-col max-w-xl m-auto">
-          <h1 className="text-2xl font-bold tracking-tight text-center scroll-m-20 lg:text-3xl">
-            Form Input Barang Temuan
-          </h1>
-          {/* <p className="leading-5 text-sm [&:not(:first-child)]:mt-6 text-center">
+          <div className="flex flex-col max-w-xl m-auto">
+            <h1 className="text-2xl font-bold tracking-tight text-center scroll-m-20 lg:text-3xl">
+              Form Input Barang Temuan
+            </h1>
+            {/* <p className="leading-5 text-sm [&:not(:first-child)]:mt-6 text-center">
               Kehilangan barang berharga anda? jangan khawatir, kami siap membantu.
               Kami di sini untuk membantu anda menemukan barang anda yang hilang!
             </p> */}
-        </div>
+          </div>
 
-        <Alert className='max-w-2xl bg-blue-200'>
-          <Info className="w-4 h-4" />
-          <AlertDescription className='font-semibold'>
-            Platform ini masih dalam tahap pengembangan, anda mungkin akan menemukan beberapa hal yang tidak diinginkan saat ini.
-          </AlertDescription>
-        </Alert>
+          <Alert className='max-w-2xl bg-blue-200'>
+            <Info className="w-4 h-4" />
+            <AlertDescription className='font-semibold'>
+              Platform ini masih dalam tahap pengembangan, anda mungkin akan menemukan beberapa hal yang tidak diinginkan saat ini.
+            </AlertDescription>
+          </Alert>
 
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Link href={'/barang-temuan'}>
-            <Button className='flex w-full gap-2 p-5 shadow-xl'>
-              Saya kehilangan barang!
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-          </Link>
-        </div>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Link href={'/barang-temuan'}>
+              <Button className='flex w-full gap-2 p-5 shadow-xl'>
+                Saya kehilangan barang!
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
+          </div>
 
-        <div className="w-full">
-          <form className="py-4">
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col space-y-2">
-                <Label htmlFor="itemName">Nama Barang</Label>
-                <Input
-                  id="itemName"
-                  placeholder="laptop asus a-bc-d"
-                  value={namaBarang}
-                  type='text'
-                  onChange={(e) => {
-                    setNamaBarang(e.target.value)
-                  }}
-                  required
-                />
-              </div>
-              <div className="flex flex-col space-y-2">
-                <Label htmlFor="itemCategory">Jenis Barang</Label>
-                <Input
-                  id="itemCategory"
-                  placeholder="elektronik"
-                  value={jenisBarang}
-                  type='text'
-                  onChange={(e) => {
-                    setJenisBarang(e.target.value)
-                  }}
-                  required
-                />
-              </div>
-              <div className="flex flex-col space-y-2">
-                <Label htmlFor="helperPhoneNumber">Nomor HP atau WhatsApp Pelapor</Label>
-                <Input
-                  id="helperPhoneNumber"
-                  placeholder="0812********"
-                  value={helperPhoneNumber}
-                  type='tel'
-                  onChange={(e) => {
-                    setHelperPhoneNumber(e.target.value)
-                  }}
-                  required
-                />
-              </div>
-              <div className="flex flex-col space-y-2">
-                <Label htmlFor="itemFoundLocation">Lokasi Temuan Barang</Label>
-                <Input
-                  id="itemFoundLocation"
-                  placeholder="Check-in area"
-                  value={lokasiTemuanBarang}
-                  type='text'
-                  onChange={(e) => {
-                    setLokasiTemuanBarang(e.target.value)
-                  }}
-                  required
-                />
-              </div>
-              <div className="flex flex-col space-y-2">
-                <Label htmlFor="itemColor">Warna Barang</Label>
-                <Input
-                  id="itemColor"
-                  placeholder="hitam"
-                  value={warnaBarang}
-                  type='text'
-                  onChange={(e) => {
-                    setWarnaBarang(e.target.value)
-                  }}
-                  required
-                />
-              </div>
-              <div className="flex flex-col space-y-2">
-                <Label htmlFor="idImage">Foto Barang</Label>
-                <Input
-                  id="idImage"
-                  placeholder="hitam"
-                  type='file'
-                  accept='image/*'
-                  onChange={(e) => {
-                    if (!e.target.files || e.target.files.length === 0) {
-                      setSelectedFile(null)
-                      return
-                    }
-                    setSelectedFile(e.target.files[0])
-                  }}
-                  className='cursor-pointer'
-                  required
-                />
-              </div>
+          <div className="w-full">
+            <form className="py-4">
+              <div className="flex flex-col gap-6">
+                <div className="flex flex-col space-y-2">
+                  <Label htmlFor="itemName">Nama Barang</Label>
+                  <Input
+                    id="itemName"
+                    placeholder="laptop asus a-bc-d"
+                    value={namaBarang}
+                    type='text'
+                    onChange={(e) => {
+                      setNamaBarang(e.target.value)
+                    }}
+                    required
+                  />
+                </div>
+                <div className="flex flex-col space-y-2">
+                  <Label htmlFor="itemCategory">Jenis Barang</Label>
+                  <Input
+                    id="itemCategory"
+                    placeholder="elektronik"
+                    value={jenisBarang}
+                    type='text'
+                    onChange={(e) => {
+                      setJenisBarang(e.target.value)
+                    }}
+                    required
+                  />
+                </div>
+                <div className="flex flex-col space-y-2">
+                  <Label htmlFor="helperPhoneNumber">Nomor HP atau WhatsApp Pelapor</Label>
+                  <Input
+                    id="helperPhoneNumber"
+                    placeholder="0812********"
+                    value={helperPhoneNumber}
+                    type='tel'
+                    onChange={(e) => {
+                      setHelperPhoneNumber(e.target.value)
+                    }}
+                    required
+                  />
+                </div>
+                <div className="flex flex-col space-y-2">
+                  <Label htmlFor="itemFoundLocation">Lokasi Temuan Barang</Label>
+                  <Input
+                    id="itemFoundLocation"
+                    placeholder="Check-in area"
+                    value={lokasiTemuanBarang}
+                    type='text'
+                    onChange={(e) => {
+                      setLokasiTemuanBarang(e.target.value)
+                    }}
+                    required
+                  />
+                </div>
+                <div className="flex flex-col space-y-2">
+                  <Label htmlFor="itemColor">Warna Barang</Label>
+                  <Input
+                    id="itemColor"
+                    placeholder="hitam"
+                    value={warnaBarang}
+                    type='text'
+                    onChange={(e) => {
+                      setWarnaBarang(e.target.value)
+                    }}
+                    required
+                  />
+                </div>
+                <div className="flex flex-col space-y-2">
+                  <Label htmlFor="idImage">Foto Barang</Label>
+                  <Input
+                    id="idImage"
+                    placeholder="hitam"
+                    type='file'
+                    accept='image/*'
+                    onChange={(e) => {
+                      if (!e.target.files || e.target.files.length === 0) {
+                        setSelectedFile(null)
+                        return
+                      }
+                      setSelectedFile(e.target.files[0])
+                    }}
+                    className='cursor-pointer'
+                    required
+                  />
+                </div>
 
-              <div className="flex flex-col space-y-2">
-                <Label htmlFor="foundDate">Tanggal Barang Ditemukan</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "justify-start text-left font-normal",
-                        !foundDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="w-4 h-4 mr-2" />
-                      {foundDate ? selectedDateTime.toFormat('DDD HH:mm') : <span>Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={selectedDateTime.toJSDate()}
-                      onSelect={handleSelect}
-                      initialFocus
-                      id='foundDate'
-                      required
-                    />
-                    <div className="px-4 pt-0 pb-4">
-                      <Label>Waktu</Label>
-                      <Input
-                        type='time'
-                        onChange={handleTimeChange}
-                        value={selectedDateTime.toFormat('HH:mm')}
+                <div className="flex flex-col space-y-2">
+                  <Label htmlFor="foundDate">Tanggal Barang Ditemukan</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "justify-start text-left font-normal",
+                          !foundDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="w-4 h-4 mr-2" />
+                        {foundDate ? selectedDateTime.toFormat('DDD HH:mm') : <span>Pick a date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={selectedDateTime.toJSDate()}
+                        onSelect={handleSelect}
+                        initialFocus
+                        id='foundDate'
+                        required
                       />
-                    </div>
-                    {!selectedDateTime ? <span>Please pick a day</span> : null}
-                  </PopoverContent>
-                </Popover>
-              </div>
+                      <div className="px-4 pt-0 pb-4">
+                        <Label>Waktu</Label>
+                        <Input
+                          type='time'
+                          onChange={handleTimeChange}
+                          value={selectedDateTime.toFormat('HH:mm')}
+                        />
+                      </div>
+                      {!selectedDateTime ? <span>Please pick a day</span> : null}
+                    </PopoverContent>
+                  </Popover>
+                </div>
 
-              <div className="flex flex-col space-y-2">
-                <Button
-                  onClick={sendData}
-                  className='flex w-20'
-                >
-                  {sending ? 'Mengirim...' : 'Kirim'}
-                </Button>
+                <div className="flex flex-col space-y-2">
+                  <Button
+                    onClick={sendData}
+                    className='flex w-20'
+                  >
+                    {sending ? 'Mengirim...' : 'Kirim'}
+                  </Button>
+                </div>
               </div>
-            </div>
-          </form>
+            </form>
+          </div>
+
         </div>
-
       </div>
-    </div>
+    </RouteProtection>
   )
 }
