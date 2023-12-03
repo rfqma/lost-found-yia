@@ -151,7 +151,7 @@ export const View = () => {
           description: "Terima kasih atas kebaikan anda 😁",
           action: (
             <>
-              <Link href={'/temuan-barang'}>
+              <Link href={'/barang-temuan'}>
                 <ToastAction altText="Temuan Barang">Temuan Barang</ToastAction>
               </Link>
             </>
