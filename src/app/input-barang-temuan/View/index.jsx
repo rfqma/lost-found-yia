@@ -166,10 +166,10 @@ export const View = () => {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2">
-          <form>
-            <div className="flex flex-col max-w-sm gap-4">
-              <div className="flex flex-col space-y-1.5">
+        <div className="w-full">
+          <form className="py-4">
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col space-y-2">
                 <Label htmlFor="itemName">Nama Barang</Label>
                 <Input
                   id="itemName"
@@ -182,7 +182,7 @@ export const View = () => {
                   required
                 />
               </div>
-              <div className="flex flex-col space-y-1.5">
+              <div className="flex flex-col space-y-2">
                 <Label htmlFor="itemCategory">Jenis Barang</Label>
                 <Input
                   id="itemCategory"
@@ -195,7 +195,7 @@ export const View = () => {
                   required
                 />
               </div>
-              <div className="flex flex-col space-y-1.5">
+              <div className="flex flex-col space-y-2">
                 <Label htmlFor="helperPhoneNumber">Nomor HP atau WhatsApp Pelapor</Label>
                 <Input
                   id="helperPhoneNumber"
@@ -208,7 +208,7 @@ export const View = () => {
                   required
                 />
               </div>
-              <div className="flex flex-col space-y-1.5">
+              <div className="flex flex-col space-y-2">
                 <Label htmlFor="itemFoundLocation">Lokasi Temuan Barang</Label>
                 <Input
                   id="itemFoundLocation"
@@ -221,7 +221,7 @@ export const View = () => {
                   required
                 />
               </div>
-              <div className="flex flex-col space-y-1.5">
+              <div className="flex flex-col space-y-2">
                 <Label htmlFor="itemColor">Warna Barang</Label>
                 <Input
                   id="itemColor"
@@ -234,7 +234,7 @@ export const View = () => {
                   required
                 />
               </div>
-              <div className="flex flex-col space-y-1.5">
+              <div className="flex flex-col space-y-2">
                 <Label htmlFor="idImage">Foto Barang</Label>
                 <Input
                   id="idImage"
@@ -253,14 +253,14 @@ export const View = () => {
                 />
               </div>
 
-              <div className="flex flex-col space-y-1.5">
+              <div className="flex flex-col space-y-2">
                 <Label htmlFor="foundDate">Tanggal Barang Ditemukan</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant={"outline"}
                       className={cn(
-                        "w-[280px] justify-start text-left font-normal",
+                        " justify-start text-left font-normal",
                         !foundDate && "text-muted-foreground"
                       )}
                     >
@@ -281,7 +281,7 @@ export const View = () => {
                 </Popover>
               </div>
 
-              <div className="flex flex-col space-y-1.5">
+              <div className="flex flex-col space-y-2">
                 <Button
                   onClick={sendData}
                   className='flex w-20'
