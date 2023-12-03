@@ -210,6 +210,25 @@ export const View = ({ data }) => {
           </AlertDescription>
         </Alert>
 
+        {
+          user.uid ?
+            <Alert className='max-w-2xl bg-green-300'>
+              <Info className="w-4 h-4" />
+              <AlertTitle>🎉</AlertTitle>
+              <AlertDescription className='font-semibold'>
+                Anda sudah melakukan login, silahkan klaim barang anda!
+              </AlertDescription>
+            </Alert>
+            :
+            <Alert className='max-w-2xl bg-yellow-200'>
+              <Info className="w-4 h-4" />
+              <AlertTitle>⚠️</AlertTitle>
+              <AlertDescription className='font-semibold'>
+                Anda belum melakukan login, silahkan login terlebih dahulu untuk melakukan klaim barang!
+              </AlertDescription>
+            </Alert>
+        }
+
         <div className="flex flex-col gap-2 sm:flex-row">
           <Link href={'/input-barang-temuan'}>
             <Button className='flex w-full gap-2 p-5 shadow-xl'>
