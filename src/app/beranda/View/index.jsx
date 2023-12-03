@@ -109,7 +109,7 @@ export const View = ({ data }) => {
           <h4 className="text-lg font-medium tracking-tight scroll-m-20">
             Barang temuan terbaru
           </h4>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
             {
               loading ?
                 <>
