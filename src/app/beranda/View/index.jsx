@@ -33,6 +33,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { useAuth } from "@/lib/providers/firebase-auth-provider"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { parseDate } from '@/lib/utilities/parse-date'
 
 export const View = ({ data }) => {
   const { results } = data
@@ -141,6 +142,7 @@ export const View = ({ data }) => {
                   })
                   :
                   foundItems.map((item) => {
+                    console.log(item.foundDate)
                     return (
                       <Card className="w-[350px]" key={item}>
                         <CardHeader>
@@ -171,6 +173,10 @@ export const View = ({ data }) => {
                             <div className="flex flex-col space-y-1.5">
                               <Label htmlFor="name">Lokasi Penemuan Barang</Label>
                               <Input id="name" value={item.lokasiTemuanBarang} className='bg-slate-200' />
+                            </div>
+                            <div className="flex flex-col space-y-1.5">
+                              <Label htmlFor="name">Tanggal Ditemukan</Label>
+                              <Input id="name" value={parseDate(item.foundDate.seconds, item.foundDate.nanoseconds)} className='bg-slate-200' />
                             </div>
                             <div className="flex flex-col space-y-1.5">
                               <Label htmlFor="name">Status</Label>
