@@ -55,6 +55,7 @@ import {
   TableCaption,
   TableFooter
 } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
 
 export const View = ({ data }) => {
   const { results } = data
@@ -124,7 +125,14 @@ export const View = ({ data }) => {
       accessorKey: "isClaimed",
       header: "Status",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("isClaimed")}</div>
+        <div className="capitalize">
+          {
+            !row.getValue("isClaimed") ?
+              <Badge className={'bg-red-600'}>Belum Diklaim</Badge>
+              :
+              <Badge className={'bg-green-600'}>Sudah Diklaim</Badge>
+          }
+        </div>
       ),
     },
     // {
@@ -341,15 +349,20 @@ export const View = ({ data }) => {
                                     <DropdownMenuContent align="end">
                                       <DropdownMenuLabel>Aksi</DropdownMenuLabel>
                                       <DropdownMenuItem>
-                                        <Button
-                                          size='sm'
-                                          onClick={() => {
-                                            setCurrentItem(row.original)
-                                            setOpenDialog(true)
-                                          }}
-                                        >
-                                          Klaim
-                                        </Button>
+                                        {
+                                          !row.original.isClaimed ?
+                                            <Button
+                                              size='sm'
+                                              onClick={() => {
+                                                setCurrentItem(row.original)
+                                                setOpenDialog(true)
+                                              }}
+                                            >
+                                              Klaim
+                                            </Button>
+                                            :
+                                            null
+                                        }
                                       </DropdownMenuItem>
                                       <DropdownMenuSeparator />
                                       <DropdownMenuItem>
