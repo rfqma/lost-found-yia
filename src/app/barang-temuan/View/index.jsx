@@ -57,6 +57,7 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { ToastAction } from "@/components/ui/toast"
 
 export const View = ({ data }) => {
   const { results } = data
@@ -129,9 +130,9 @@ export const View = ({ data }) => {
         <div className="capitalize">
           {
             !row.getValue("isClaimed") ?
-              <Badge className={'bg-red-600'}>Belum Diklaim</Badge>
+              <Badge className={'bg-red-600 text-xs'}>Belum Diklaim</Badge>
               :
-              <Badge className={'bg-green-600'}>Sudah Diklaim</Badge>
+              <Badge className={'bg-green-600 text-xs'}>Sudah Diklaim</Badge>
           }
         </div>
       ),
@@ -252,14 +253,25 @@ export const View = ({ data }) => {
                   :
                   <div className="w-full">
                     <div className="flex items-center py-4">
-                      <Input
-                        placeholder="Filter nama barang..."
-                        value={(table.getColumn("namaBarang")?.getFilterValue()) ?? ""}
-                        onChange={(event) =>
-                          table.getColumn("namaBarang")?.setFilterValue(event.target.value)
-                        }
-                        className="max-w-sm"
-                      />
+                      <div className="gap-2 sm:flex">
+                        <Input
+                          placeholder="Filter nama barang..."
+                          value={(table.getColumn("namaBarang")?.getFilterValue()) ?? ""}
+                          onChange={(event) =>
+                            table.getColumn("namaBarang")?.setFilterValue(event.target.value)
+                          }
+                          className="max-w-sm"
+                        />
+                        <Input
+                          placeholder="Filter lokasi temuan..."
+                          value={(table.getColumn("lokasiTemuanBarang")?.getFilterValue()) ?? ""}
+                          onChange={(event) =>
+                            table.getColumn("lokasiTemuanBarang")?.setFilterValue(event.target.value)
+                          }
+                          className="max-w-sm"
+                        />
+                      </div>
+
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="outline" className="ml-auto">
@@ -365,8 +377,22 @@ export const View = ({ data }) => {
                                             <Button
                                               size='sm'
                                               onClick={() => {
-                                                setCurrentItem(row.original)
-                                                setOpenDialog(true)
+                                                if (user.uid) {
+                                                  setCurrentItem(row.original)
+                                                  setOpenDialog(true)
+                                                } else {
+                                                  toast({
+                                                    title: "⚠️ Peringatan!",
+                                                    description: "Anda harus login terlebih dahulu!",
+                                                    action: (
+                                                      <>
+                                                        <Link href={'/login'}>
+                                                          <ToastAction altText="Login">Login</ToastAction>
+                                                        </Link>
+                                                      </>
+                                                    )
+                                                  })
+                                                }
                                               }}
                                             >
                                               Klaim
