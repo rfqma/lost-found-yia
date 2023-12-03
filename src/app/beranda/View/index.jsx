@@ -198,7 +198,7 @@ export const View = ({ data }) => {
                           <AlertDialog>
                             <AlertDialogTrigger>
                               {
-                                !item.isClaimed ?
+                                !item.isClaimed && user.uid ?
                                   <Button
                                     onClick={() => {
                                       setCurrentItem(item)
