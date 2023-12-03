@@ -58,6 +58,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ToastAction } from "@/components/ui/toast"
+import { parseDate } from "@/lib/utilities/parse-date"
 
 export const View = ({ data }) => {
   const { results } = data
@@ -122,6 +123,21 @@ export const View = ({ data }) => {
         )
       },
       cell: ({ row }) => <div className="lowercase">{row.getValue("lokasiTemuanBarang")}</div>,
+    },
+    {
+      accessorKey: "foundDate",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Tanggal Ditemukan
+            <ArrowUpDown className="w-4 h-4 ml-2" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => <div className="lowercase">{parseDate(row.getValue("foundDate").seconds, row.getValue("foundDate").nanoseconds)}</div>,
     },
     {
       accessorKey: "isClaimed",
@@ -321,10 +337,13 @@ export const View = ({ data }) => {
                                         column.id === 'lokasiTemuanBarang' ?
                                           'Lokasi Temuan'
                                           :
-                                          column.id === 'isClaimed' ?
-                                            'Status'
+                                          column.id === 'foundDate' ?
+                                            'Tanggal Ditemukan'
                                             :
-                                            column.id
+                                            column.id === 'isClaimed' ?
+                                              'Status'
+                                              :
+                                              column.id
                                   }
                                 </DropdownMenuCheckboxItem>
                               )
