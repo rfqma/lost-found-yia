@@ -268,7 +268,7 @@ export const View = ({ data }) => {
                   })
             }
           </div>
-          <Link href={'#'} className="flex justify-end mt-2">
+          <Link href={'/barang-temuan'} className="flex justify-end mt-2">
             <Button>
               Lihat Selengkapnya
             </Button>
