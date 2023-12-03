@@ -142,16 +142,16 @@ export const View = ({ data }) => {
                     return (
                       <Card className="w-[350px]" key={item}>
                         <CardHeader>
-                          <div className="relative w-full h-full">
+                          <div className="relative w-full h-[250px]">
                             <Image
                               src={item.fotoBarang}
                               alt={item.namaBarang}
                               width={250}
                               height={250}
-                              className="object-cover w-full filter grayscale"
+                              className="object-cover w-full h-full rounded-xl filter grayscale"
                             />
                             <div
-                              className="absolute inset-0 backdrop-filter backdrop-blur-sm"
+                              className="absolute inset-0 backdrop-filter backdrop-blur-sm rounded-xl"
                               style={{ content: '""' }}
                             ></div>
                           </div>
