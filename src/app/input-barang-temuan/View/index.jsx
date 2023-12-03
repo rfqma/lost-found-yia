@@ -23,6 +23,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { ToastAction } from "@/components/ui/toast"
+import { DateTime } from "luxon"
+import { SelectSingleEventHandler } from "react-day-picker"
 
 export const View = () => {
   const [namaBarang, setNamaBarang] = useState('')
@@ -32,10 +34,39 @@ export const View = () => {
   const [helperPhoneNumber, setHelperPhoneNumber] = useState('')
   const [selectedFile, setSelectedFile] = useState(null)
   // const [preview, setPreview] = useState(null)
-  const [foundDate, setFoundDate] = useState(null)
+  const [foundDate, setFoundDate] = useState(new Date())
   const [sending, setSending] = useState(false)
   const { user } = useAuth()
   const { toast } = useToast()
+  const [selectedDateTime, setSelectedDateTime] = useState(DateTime.fromJSDate(foundDate))
+
+  const handleSelect = (day, selected) => {
+    const selectedDay = DateTime.fromJSDate(selected)
+    const modifiedDay = selectedDay.set({
+      hour: selectedDateTime.hour,
+      minute: selectedDateTime.minute,
+    })
+
+    setSelectedDateTime(modifiedDay)
+    setFoundDate(modifiedDay.toJSDate())
+  }
+
+  const handleTimeChange = (e) => {
+    const { value } = e.target
+    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/
+
+    if (!timeRegex.test(value)) {
+      console.log('Invalid time format')
+      return
+    }
+
+    const hours = Number.parseInt(value.split(':')[0] || '00', 10)
+    const minutes = Number.parseInt(value.split(':')[1] || '00', 10)
+    const modifiedDay = selectedDateTime.set({ hour: hours, minute: minutes })
+
+    setSelectedDateTime(modifiedDay)
+    setFoundDate(modifiedDay.toJSDate())
+  }
 
   // useEffect(() => {
   //   if (!selectedFile) {
@@ -66,12 +97,12 @@ export const View = () => {
     e.preventDefault()
 
     if (namaBarang === '' ||
-      warnaBarang === '' ||
       jenisBarang === '' ||
-      helperPhoneNumber === '' ||
       lokasiTemuanBarang === '' ||
+      warnaBarang === '' ||
       foundDate === null ||
-      selectedFile === null
+      selectedFile === null ||
+      helperPhoneNumber === ''
     ) {
       return toast({
         title: "⚠️ Peringatan!",
@@ -97,22 +128,23 @@ export const View = () => {
           namaBarang,
           jenisBarang,
           lokasiTemuanBarang,
-          helperPhoneNumber,
           warnaBarang,
+          foundDate,
           fotoBarang: photoUrl,
+          isClaimed: false,
+          helperPhoneNumber,
           user,
-          foundDate
         }
 
         await setDoc(addedItems, foundItem)
         setSending(false)
-        setNamaBarang('');
-        setJenisBarang('');
-        setLokasiTemuanBarang('');
-        setHelperPhoneNumber('');
-        setWarnaBarang('');
-        setSelectedFile(null);
-        setFoundDate(null);
+        setNamaBarang('')
+        setJenisBarang('')
+        setLokasiTemuanBarang('')
+        setWarnaBarang('')
+        setFoundDate(null)
+        setSelectedFile(null)
+        setHelperPhoneNumber('')
 
         toast({
           title: "✅ Berhasil!",
@@ -260,23 +292,32 @@ export const View = () => {
                     <Button
                       variant={"outline"}
                       className={cn(
-                        " justify-start text-left font-normal",
+                        "justify-start text-left font-normal",
                         !foundDate && "text-muted-foreground"
                       )}
                     >
                       <CalendarIcon className="w-4 h-4 mr-2" />
-                      {foundDate ? format(foundDate, "PPP") : <span>Pick a date</span>}
+                      {foundDate ? selectedDateTime.toFormat('DDD HH:mm') : <span>Pick a date</span>}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
                     <Calendar
                       mode="single"
-                      selected={foundDate}
-                      onSelect={setFoundDate}
+                      selected={selectedDateTime.toJSDate()}
+                      onSelect={handleSelect}
                       initialFocus
                       id='foundDate'
                       required
                     />
+                    <div className="px-4 pt-0 pb-4">
+                      <Label>Waktu</Label>
+                      <Input
+                        type='time'
+                        onChange={handleTimeChange}
+                        value={selectedDateTime.toFormat('HH:mm')}
+                      />
+                    </div>
+                    {!selectedDateTime ? <span>Please pick a day</span> : null}
                   </PopoverContent>
                 </Popover>
               </div>
