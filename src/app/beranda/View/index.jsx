@@ -31,6 +31,8 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useToast } from "@/components/ui/use-toast"
 import { useAuth } from "@/lib/providers/firebase-auth-provider"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export const View = ({ data }) => {
   const { results } = data
@@ -170,19 +172,43 @@ export const View = ({ data }) => {
                               <Label htmlFor="name">Lokasi Penemuan Barang</Label>
                               <Input id="name" value={item.lokasiTemuanBarang} className='bg-slate-200' />
                             </div>
+                            <div className="flex flex-col space-y-1.5">
+                              <Label htmlFor="name">Status</Label>
+                              {
+                                !item.isClaimed ?
+                                  <Badge className={'bg-red-600 w-[110px] justify-center'}>Belum Diklaim</Badge>
+                                  :
+                                  <Badge className={'bg-green-600'}>Sudah Diklaim</Badge>
+                              }
+                            </div>
+                            <div className="flex flex-col space-y-1.5">
+                              <Label htmlFor="name">Pelapor</Label>
+                              <div className="flex items-center gap-2">
+                                <Avatar className='w-7 h-7'>
+                                  <AvatarImage src={item.user.photoURL} />
+                                  <AvatarFallback>CN</AvatarFallback>
+                                </Avatar>
+                                <span className="text-xs">{item.user.email}</span>
+                              </div>
+                            </div>
                           </div>
                         </CardContent>
                         <CardFooter className="flex justify-between">
                           {/* <Button variant="outline">Cancel</Button> */}
                           <AlertDialog>
                             <AlertDialogTrigger>
-                              <Button
-                                onClick={() => {
-                                  setCurrentItem(item)
-                                }}
-                              >
-                                Klaim
-                              </Button>
+                              {
+                                !item.isClaimed ?
+                                  <Button
+                                    onClick={() => {
+                                      setCurrentItem(item)
+                                    }}
+                                  >
+                                    Klaim
+                                  </Button>
+                                  :
+                                  null
+                              }
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
