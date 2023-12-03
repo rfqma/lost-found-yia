@@ -56,6 +56,7 @@ import {
   TableFooter
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export const View = ({ data }) => {
   const { results } = data
@@ -318,6 +319,9 @@ export const View = ({ data }) => {
                                 )
                               })}
                               <TableHead>
+                                Pelapor
+                              </TableHead>
+                              <TableHead>
                                 Aksi
                               </TableHead>
                             </TableRow>
@@ -338,6 +342,13 @@ export const View = ({ data }) => {
                                     )}
                                   </TableCell>
                                 ))}
+                                <TableCell className='flex items-center gap-2'>
+                                  <Avatar className='w-7 h-7'>
+                                    <AvatarImage src={row.original.user.photoURL} />
+                                    <AvatarFallback>CN</AvatarFallback>
+                                  </Avatar>
+                                  {row.original.user.email}
+                                </TableCell>
                                 <TableCell>
                                   <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
