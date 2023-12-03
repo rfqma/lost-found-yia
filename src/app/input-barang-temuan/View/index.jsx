@@ -1,0 +1,299 @@
+'use client'
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import Link from "next/link"
+import { Info, ArrowRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { useEffect, useState } from "react"
+import { useAuth } from "@/lib/providers/firebase-auth-provider"
+import { firebaseStorage } from "@/lib/databases/firebase"
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
+import { doc, setDoc } from "firebase/firestore"
+import { firebaseDB } from "@/lib/databases/firebase"
+import { useToast } from "@/components/ui/use-toast"
+import { format } from "date-fns"
+import { Calendar as CalendarIcon } from "lucide-react"
+import { cn } from "@/lib/utilities"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { ToastAction } from "@/components/ui/toast"
+
+export const View = () => {
+  const [namaBarang, setNamaBarang] = useState('')
+  const [jenisBarang, setJenisBarang] = useState('')
+  const [lokasiTemuanBarang, setLokasiTemuanBarang] = useState('')
+  const [warnaBarang, setWarnaBarang] = useState('')
+  const [helperPhoneNumber, setHelperPhoneNumber] = useState('')
+  const [selectedFile, setSelectedFile] = useState(null)
+  // const [preview, setPreview] = useState(null)
+  const [foundDate, setFoundDate] = useState(null)
+  const [sending, setSending] = useState(false)
+  const { user } = useAuth()
+  const { toast } = useToast()
+
+  // useEffect(() => {
+  //   if (!selectedFile) {
+  //     setPreview(undefined)
+  //     return
+  //   }
+
+  //   const objectUrl = URL.createObjectURL(selectedFile)
+  //   setPreview(objectUrl)
+
+  //   return () => URL.revokeObjectURL(objectUrl)
+  // }, [selectedFile])
+
+  const handleUpload = async () => {
+    const mountainsRef = ref(firebaseStorage, 'foundItemsImage/' + selectedFile.name)
+
+    try {
+      const snapshot = await uploadBytesResumable(mountainsRef, selectedFile)
+      const downloadUrl = await getDownloadURL(snapshot.ref)
+      return downloadUrl
+    } catch (error) {
+      console.error(error)
+      return null
+    }
+  }
+
+  const sendData = async (e) => {
+    e.preventDefault()
+
+    if (namaBarang === '' ||
+      warnaBarang === '' ||
+      jenisBarang === '' ||
+      helperPhoneNumber === '' ||
+      lokasiTemuanBarang === '' ||
+      foundDate === null ||
+      selectedFile === null
+    ) {
+      return toast({
+        title: "⚠️ Peringatan!",
+        description: "Mohon isi semua data yang diperlukan!",
+      })
+    } else {
+      setSending(true)
+
+      const timestamp = new Date().getTime().toString()
+      const addedItems = doc(firebaseDB, 'foundItems/' + timestamp)
+
+      try {
+        const photoUrl = await handleUpload()
+
+        if (!photoUrl) {
+          return toast({
+            title: "⚠️ Peringatan!",
+            description: "Terjadi kesalahan saat mengunggah foto barang."
+          })
+        }
+
+        const foundItem = {
+          namaBarang,
+          jenisBarang,
+          lokasiTemuanBarang,
+          helperPhoneNumber,
+          warnaBarang,
+          fotoBarang: photoUrl,
+          user,
+          foundDate
+        }
+
+        await setDoc(addedItems, foundItem)
+        setSending(false)
+        setNamaBarang('');
+        setJenisBarang('');
+        setLokasiTemuanBarang('');
+        setHelperPhoneNumber('');
+        setWarnaBarang('');
+        setSelectedFile(null);
+        setFoundDate(null);
+
+        toast({
+          title: "✅ Berhasil!",
+          description: "Terima kasih atas kebaikan anda 😁",
+          action: (
+            <>
+              <Link href={'/temuan-barang'}>
+                <ToastAction altText="Temuan Barang">Temuan Barang</ToastAction>
+              </Link>
+            </>
+          )
+        })
+      } catch (error) {
+        console.error(error)
+        setSending(false)
+        return toast({
+          title: "⚠️ Peringatan!",
+          description: "Terjadi kesalahan saat mengirim data."
+        })
+      }
+    }
+  }
+
+  return (
+    <div className="container p-5 py-24">
+      <div className="flex flex-col items-center gap-10">
+
+        <div className="flex flex-col max-w-xl m-auto">
+          <h1 className="text-2xl font-bold tracking-tight text-center scroll-m-20 lg:text-3xl">
+            Form Input Barang Temuan
+          </h1>
+          {/* <p className="leading-5 text-sm [&:not(:first-child)]:mt-6 text-center">
+              Kehilangan barang berharga anda? jangan khawatir, kami siap membantu.
+              Kami di sini untuk membantu anda menemukan barang anda yang hilang!
+            </p> */}
+        </div>
+
+        <Alert className='max-w-2xl bg-blue-200'>
+          <Info className="w-4 h-4" />
+          <AlertDescription className='font-semibold'>
+            Platform ini masih dalam tahap pengembangan, anda mungkin akan menemukan beberapa hal yang tidak diinginkan saat ini.
+          </AlertDescription>
+        </Alert>
+
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Link href={'/barang-temuan'}>
+            <Button className='flex w-full gap-2 p-5 shadow-xl'>
+              Saya kehilangan barang!
+              <ArrowRight className="w-4 h-4" />
+            </Button>
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2">
+          <form>
+            <div className="flex flex-col max-w-sm gap-4">
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="itemName">Nama Barang</Label>
+                <Input
+                  id="itemName"
+                  placeholder="laptop asus a-bc-d"
+                  value={namaBarang}
+                  type='text'
+                  onChange={(e) => {
+                    setNamaBarang(e.target.value)
+                  }}
+                  required
+                />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="itemCategory">Jenis Barang</Label>
+                <Input
+                  id="itemCategory"
+                  placeholder="elektronik"
+                  value={jenisBarang}
+                  type='text'
+                  onChange={(e) => {
+                    setJenisBarang(e.target.value)
+                  }}
+                  required
+                />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="helperPhoneNumber">Nomor HP atau WhatsApp Pelapor</Label>
+                <Input
+                  id="helperPhoneNumber"
+                  placeholder="0812********"
+                  value={helperPhoneNumber}
+                  type='tel'
+                  onChange={(e) => {
+                    setHelperPhoneNumber(e.target.value)
+                  }}
+                  required
+                />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="itemFoundLocation">Lokasi Temuan Barang</Label>
+                <Input
+                  id="itemFoundLocation"
+                  placeholder="Check-in area"
+                  value={lokasiTemuanBarang}
+                  type='text'
+                  onChange={(e) => {
+                    setLokasiTemuanBarang(e.target.value)
+                  }}
+                  required
+                />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="itemColor">Warna Barang</Label>
+                <Input
+                  id="itemColor"
+                  placeholder="hitam"
+                  value={warnaBarang}
+                  type='text'
+                  onChange={(e) => {
+                    setWarnaBarang(e.target.value)
+                  }}
+                  required
+                />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="idImage">Foto Barang</Label>
+                <Input
+                  id="idImage"
+                  placeholder="hitam"
+                  type='file'
+                  accept='image/*'
+                  onChange={(e) => {
+                    if (!e.target.files || e.target.files.length === 0) {
+                      setSelectedFile(null)
+                      return
+                    }
+                    setSelectedFile(e.target.files[0])
+                  }}
+                  className='cursor-pointer'
+                  required
+                />
+              </div>
+
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="foundDate">Tanggal Barang Ditemukan</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-[280px] justify-start text-left font-normal",
+                        !foundDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="w-4 h-4 mr-2" />
+                      {foundDate ? format(foundDate, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={foundDate}
+                      onSelect={setFoundDate}
+                      initialFocus
+                      id='foundDate'
+                      required
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="flex flex-col space-y-1.5">
+                <Button
+                  onClick={sendData}
+                  className='flex w-20'
+                >
+                  {sending ? 'Mengirim...' : 'Kirim'}
+                </Button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  )
+}
