@@ -34,6 +34,7 @@ import { useAuth } from "@/lib/providers/firebase-auth-provider"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { parseDate } from '@/lib/utilities/parse-date'
+import axios from "axios"
 
 export const View = ({ data }) => {
   const { results } = data
@@ -69,6 +70,37 @@ export const View = ({ data }) => {
 
   const loading = foundItems.length === 0
   const empty = foundItems.includes("Sorry, there are no items found...")
+
+  const sendNotification = async (e, data) => {
+    e.preventDefault()
+
+    try {
+      const response = await axios.post('/api/email/lapor-kehilangan-barang', data)
+
+      if (response.status === 200) {
+        toast({
+          title: "✅ Berhasil!",
+          description: "Pesan anda berhasil dikirim!",
+        })
+        setSending(false)
+        setReporterName('')
+        setReporterPhoneNumber('')
+        setReporterMessage('')
+      } else if (response.status === 500) {
+        toast({
+          title: "❌ Gagal!",
+          description: "Pesan anda gagal terkirim!",
+        })
+        setSending(false)
+        setReporterName('')
+        setReporterPhoneNumber('')
+        setReporterMessage('')
+      }
+    } catch (error) {
+      console.log(error)
+      setSending(false)
+    }
+  }
 
   return (
     <div className="container p-5 py-24">
@@ -142,9 +174,8 @@ export const View = ({ data }) => {
                   })
                   :
                   foundItems.map((item) => {
-                    console.log(item.foundDate)
                     return (
-                      <Card className="w-[350px]" key={item}>
+                      <Card className="w-[350px]" key={item.namaBarang}>
                         <CardHeader>
                           <div className="relative w-full h-[250px]">
                             <Image
@@ -164,19 +195,19 @@ export const View = ({ data }) => {
                           <div className="grid items-center w-full gap-4">
                             <div className="flex flex-col space-y-1.5">
                               <Label htmlFor="name">Nama Barang</Label>
-                              <Input id="name" value={item.namaBarang} className='bg-slate-200' />
+                              <Input id="name" defaultValue={item.namaBarang} className='bg-slate-200' />
                             </div>
                             <div className="flex flex-col space-y-1.5">
                               <Label htmlFor="name">Jenis Barang</Label>
-                              <Input id="name" value={item.jenisBarang} className='bg-slate-200' />
+                              <Input id="name" defaultValue={item.jenisBarang} className='bg-slate-200' />
                             </div>
                             <div className="flex flex-col space-y-1.5">
                               <Label htmlFor="name">Lokasi Penemuan Barang</Label>
-                              <Input id="name" value={item.lokasiTemuanBarang} className='bg-slate-200' />
+                              <Input id="name" defaultValue={item.lokasiTemuanBarang} className='bg-slate-200' />
                             </div>
                             <div className="flex flex-col space-y-1.5">
                               <Label htmlFor="name">Tanggal Ditemukan</Label>
-                              <Input id="name" value={parseDate(item.foundDate.seconds, item.foundDate.nanoseconds)} className='bg-slate-200' />
+                              <Input id="name" defaultValue={parseDate(item.foundDate.seconds, item.foundDate.nanoseconds)} className='bg-slate-200' />
                             </div>
                             <div className="flex flex-col space-y-1.5">
                               <Label htmlFor="name">Status</Label>
@@ -320,18 +351,6 @@ export const View = ({ data }) => {
                   <form>
                     <div className="flex flex-col max-w-sm gap-4">
                       <div className="flex flex-col space-y-1.5">
-                        <Label htmlFor="reporterPhoneNumber">Nomor Telepon atau WhatsApp</Label>
-                        <Input
-                          id="reporterPhoneNumber"
-                          placeholder="0812********"
-                          value={reporterPhoneNumber}
-                          type='tel'
-                          onChange={(e) => {
-                            setReporterPhoneNumber(e.target.value)
-                          }}
-                        />
-                      </div>
-                      <div className="flex flex-col space-y-1.5">
                         <Label htmlFor="reporterName">Nama Pelapor</Label>
                         <Input
                           id="reporterName"
@@ -340,6 +359,18 @@ export const View = ({ data }) => {
                           type='text'
                           onChange={(e) => {
                             setReporterName(e.target.value)
+                          }}
+                        />
+                      </div>
+                      <div className="flex flex-col space-y-1.5">
+                        <Label htmlFor="reporterPhoneNumber">Nomor Telepon atau WhatsApp</Label>
+                        <Input
+                          id="reporterPhoneNumber"
+                          placeholder="0812********"
+                          value={reporterPhoneNumber}
+                          type='tel'
+                          onChange={(e) => {
+                            setReporterPhoneNumber(e.target.value)
                           }}
                         />
                       </div>
@@ -361,10 +392,11 @@ export const View = ({ data }) => {
                             e.preventDefault()
 
                             const data = {
-                              reporterPhoneNumber,
                               reporterName,
+                              reporterPhoneNumber,
                               reporterMessage,
-                              email: user.email
+                              reporterEmail: user.email,
+                              reporterEmailDisplayName: user.displayName
                             }
 
                             if (reporterPhoneNumber === "" || reporterPhoneNumber === null &&
@@ -376,10 +408,11 @@ export const View = ({ data }) => {
                               })
                             } else {
                               setSending(true)
-                              // sendNotification(e, data)
+                              sendNotification(e, data)
                             }
                           }}
                           className='flex w-20'
+                          disabled={sending ? true : false}
                         >
                           {sending ? 'Mengirim...' : 'Kirim'}
                         </Button>
