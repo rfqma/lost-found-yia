@@ -59,6 +59,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ToastAction } from "@/components/ui/toast"
 import { parseDate } from "@/lib/utilities/parse-date"
+import axios from "axios"
 
 export const View = ({ data }) => {
   const { results } = data
@@ -204,6 +205,37 @@ export const View = ({ data }) => {
 
   const loading = foundItems.length === 0
   const empty = foundItems.includes("Sorry, there are no items found...")
+
+  const sendNotificationKlaim = async (e, data) => {
+    e.preventDefault()
+
+    try {
+      const response = await axios.post('/api/email/klaim-barang-temuan', data)
+
+      if (response.status === 200) {
+        toast({
+          title: "✅ Berhasil!",
+          description: "Notifikasi klaim anda berhasil dikirim, silahkan cek email anda!",
+        })
+        setSending(false)
+        setClaimersPhoneNumber('')
+        setClaimersItemColor('')
+        setClaimersItemDescription('')
+      } else if (response.status === 500) {
+        toast({
+          title: "❌ Gagal!",
+          description: "Notifikasi klaim anda gagal terkirim!",
+        })
+        setSending(false)
+        setClaimersPhoneNumber('')
+        setClaimersItemColor('')
+        setClaimersItemDescription('')
+      }
+    } catch (error) {
+      console.log(error)
+      setSending(false)
+    }
+  }
 
   return (
     <div className="container p-5 py-24">
@@ -559,10 +591,12 @@ export const View = ({ data }) => {
                       e.preventDefault()
 
                       const data = {
+                        claimersEmail: user.email,
+                        claimersEmailDisplayName: user.displayName,
                         claimersPhoneNumber,
                         claimersItemColor,
                         claimersItemDescription,
-                        id: currentItem
+                        item: currentItem
                       }
 
                       if (claimersPhoneNumber === "" || claimersPhoneNumber === null &&
@@ -574,9 +608,10 @@ export const View = ({ data }) => {
                         })
                       } else {
                         setSending(true)
-                        // sendNotification(e, data)
+                        sendNotificationKlaim(e, data)
                       }
                     }}
+                    disabled={sending ? true : false}
                   >
                     {sending ? 'Mengirim...' : 'Kirim'}
                   </AlertDialogAction>

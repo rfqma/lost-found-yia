@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer'
 import { NextResponse } from 'next/server'
-import { userMailHTML, authorityMailHTML } from '@/lib/email/lapor-kehilangan-barang'
+import { userMailHTML, authorityMailHTML } from '@/lib/email/klaim-barang-temuan'
 
 export async function POST(req) {
   try {
@@ -14,25 +14,26 @@ export async function POST(req) {
 
     const requestBody = await req.json()
     const {
-      reporterName,
-      reporterPhoneNumber,
-      reporterMessage,
-      reporterEmail,
-      reporterEmailDisplayName
+      claimersEmail,
+      claimersEmailDisplayName,
+      claimersPhoneNumber,
+      claimersItemColor,
+      claimersItemDescription,
+      item
     } = requestBody
 
     const userMailOptions = {
       from: process.env.NEXT_PUBLIC_GMAIL,
-      to: reporterEmail,
-      subject: 'Laporanmu sudah kami terima!',
-      html: userMailHTML(reporterName, reporterPhoneNumber, reporterMessage, reporterEmail, reporterEmailDisplayName)
+      to: claimersEmail,
+      subject: 'Pengajuan klaim barang temuan sudah kami terima!',
+      html: userMailHTML(claimersEmail, claimersEmailDisplayName, claimersPhoneNumber, claimersItemColor, claimersItemDescription, item)
     }
 
     const authorityMailOptions = {
       from: process.env.NEXT_PUBLIC_GMAIL,
       to: process.env.NEXT_PUBLIC_AUTHORITY_EMAIL,
-      subject: 'Laporan kehilangan barang!',
-      html: authorityMailHTML(reporterName, reporterPhoneNumber, reporterMessage, reporterEmail, reporterEmailDisplayName)
+      subject: 'Permintaan klaim barang temuan!',
+      html: authorityMailHTML(claimersEmail, claimersEmailDisplayName, claimersPhoneNumber, claimersItemColor, claimersItemDescription, item)
     }
 
     await transporter.sendMail(userMailOptions)
