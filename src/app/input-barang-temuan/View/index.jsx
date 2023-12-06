@@ -26,6 +26,7 @@ import { ToastAction } from "@/components/ui/toast"
 import { DateTime } from "luxon"
 import { SelectSingleEventHandler } from "react-day-picker"
 import { RouteProtection } from "@/lib/utilities/route-protection"
+import axios from "axios"
 
 export const View = () => {
   const [namaBarang, setNamaBarang] = useState('')
@@ -138,6 +139,7 @@ export const View = () => {
         }
 
         await setDoc(addedItems, foundItem)
+        await sendNotificationLaporBarangTemuan(foundItem)
         setSending(false)
         setNamaBarang('')
         setJenisBarang('')
@@ -147,17 +149,17 @@ export const View = () => {
         setSelectedFile(null)
         setHelperPhoneNumber('')
 
-        toast({
-          title: "✅ Berhasil!",
-          description: "Terima kasih atas kebaikan anda 😁",
-          action: (
-            <>
-              <Link href={'/barang-temuan'}>
-                <ToastAction altText="Temuan Barang">Temuan Barang</ToastAction>
-              </Link>
-            </>
-          )
-        })
+        // toast({
+        //   title: "✅ Berhasil!",
+        //   description: "Terima kasih atas kebaikan anda 😁, periksa email anda untuk informasi lebih lanjut!",
+        //   action: (
+        //     <>
+        //       <Link href={'/barang-temuan'}>
+        //         <ToastAction altText="Temuan Barang">Temuan Barang</ToastAction>
+        //       </Link>
+        //     </>
+        //   )
+        // })
       } catch (error) {
         console.error(error)
         setSending(false)
@@ -166,6 +168,26 @@ export const View = () => {
           description: "Terjadi kesalahan saat mengirim data."
         })
       }
+    }
+  }
+
+  const sendNotificationLaporBarangTemuan = async (foundItem) => {
+    try {
+      const response = await axios.post('/api/email/lapor-barang-temuan', foundItem)
+
+      if (response.status === 200) {
+        toast({
+          title: "✅ Berhasil!",
+          description: "Laporan anda berhasil dikirim, silahkan cek email anda!",
+        })
+      } else if (response.status === 500) {
+        toast({
+          title: "❌ Gagal!",
+          description: "Laporan anda gagal terkirim!",
+        })
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 
