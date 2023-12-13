@@ -246,7 +246,7 @@ export const View = ({ data }) => {
                                 !item.isClaimed ?
                                   <Badge className={'bg-red-600 w-[110px] justify-center'}>Belum Diklaim</Badge>
                                   :
-                                  <Badge className={'bg-green-600'}>Sudah Diklaim</Badge>
+                                  <Badge className={'bg-green-600 w-[110px] justify-center'}>Sudah Diklaim</Badge>
                               }
                             </div>
                             <div className="flex flex-col space-y-1.5">
