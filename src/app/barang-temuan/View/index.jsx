@@ -60,6 +60,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ToastAction } from "@/components/ui/toast"
 import { parseDate } from "@/lib/utilities/parse-date"
 import axios from "axios"
+import { doc, setDoc, deleteDoc } from "firebase/firestore"
+import { firebaseDB } from "@/lib/databases/firebase"
 
 export const View = ({ data }) => {
   const { results } = data
@@ -234,6 +236,46 @@ export const View = ({ data }) => {
     } catch (error) {
       console.log(error)
       setSending(false)
+    }
+  }
+
+  const updateData = async (itemId, itemNewStatus) => {
+    const updatedItems = doc(firebaseDB, 'foundItems/' + itemId)
+
+    try {
+      await setDoc(updatedItems, { isClaimed: itemNewStatus }, { merge: true })
+      toast({
+        title: "✅ Berhasil!",
+        description: "Status berhasil diubah!",
+      })
+      console.log(`Status updated successfully for item with ID ${itemId}`);
+      window.location.reload()
+    } catch (error) {
+      toast({
+        title: "❌ Gagal!",
+        description: "Status gagal diubah!",
+      })
+      console.error(`Error updating status: ${error.message}`);
+    }
+  }
+
+  const deleteData = async (itemId) => {
+    const deletedItems = doc(firebaseDB, 'foundItems/' + itemId)
+
+    try {
+      await deleteDoc(deletedItems)
+      toast({
+        title: "✅ Berhasil!",
+        description: "Data berhasil dihapus!",
+      })
+      console.log(`Item with ID ${itemId} deleted successfully`);
+      window.location.reload()
+    } catch (error) {
+      toast({
+        title: "❌ Gagal!",
+        description: "Data gagal dihapus!",
+      })
+      console.error(`Error removing item: ${error.message}`);
     }
   }
 
@@ -474,7 +516,6 @@ export const View = ({ data }) => {
                                             null
                                         }
                                       </DropdownMenuItem>
-                                      <DropdownMenuSeparator />
                                       <DropdownMenuItem>
                                         <a
                                           href={row.original.fotoBarang}
@@ -486,6 +527,44 @@ export const View = ({ data }) => {
                                         </a>
                                       </DropdownMenuItem>
                                       {/* <DropdownMenuItem>View payment details</DropdownMenuItem> */}
+                                      <DropdownMenuSeparator />
+                                      <DropdownMenuItem>
+                                        {
+                                          user.email === 'arinorimaruyama@gmail.com' ?
+                                            <Button
+                                              onClick={() => {
+                                                updateData(row.original.id, !row.original.isClaimed)
+                                              }}
+                                              size='sm'
+                                              className={
+                                                row.original.isClaimed ?
+                                                  'bg-red-600 hover:bg-red-700'
+                                                  :
+                                                  'bg-green-600 hover:bg-green-700'
+                                              }
+                                            >
+                                              Ubah Status
+                                            </Button>
+                                            :
+                                            null
+                                        }
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem>
+                                        {
+                                          user.email === 'arinorimaruyama@gmail.com' ?
+                                            <Button
+                                              onClick={() => {
+                                                deleteData(row.original.id)
+                                              }}
+                                              size='sm'
+                                              className='bg-red-600 hover:bg-red-700'
+                                            >
+                                              Hapus
+                                            </Button>
+                                            :
+                                            null
+                                        }
+                                      </DropdownMenuItem>
                                     </DropdownMenuContent>
                                   </DropdownMenu>
                                 </TableCell>
